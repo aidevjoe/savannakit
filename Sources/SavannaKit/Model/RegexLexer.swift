@@ -80,10 +80,10 @@ extension RegexLexer {
 
 		source.enumerateSubstrings(in: source.startIndex..<source.endIndex, options: [.byWords]) { (word, range, _, _) in
 
-			if let word = word, generator.keywords.contains(word) {
+			if let word = word, generator.keywords.contains(word), let range = source.NSRange(of: word) {
 
-//                let token = generator.tokenTransformer(range, <#NSRange#>)
-//				tokens.append(token)
+               let token = generator.tokenTransformer(range)
+				tokens.append(token)
 
 			}
 
@@ -128,6 +128,24 @@ extension RegexLexer {
         }
         
         return list
+    }
+
+}
+
+extension String {
+
+    func NSRange(of substring: String) -> NSRange? {
+        // Get the swift range
+        guard let range = range(of: substring) else { return nil }
+
+        // Get the distance to the start of the substring
+        let start = distance(from: startIndex, to: range.lowerBound) as Int
+        //Get the distance to the end of the substring
+        let end = distance(from: startIndex, to: range.upperBound) as Int
+
+        //length = endOfSubstring - startOfSubstring
+        //start = startOfSubstring
+        return NSMakeRange(start, end - start)
     }
 
 }
